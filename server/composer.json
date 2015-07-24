@@ -1,13 +1,20 @@
 {
-    "name": "glicer/glsearch",
-    "license": "MIT",
-    "type": "project",
-    "description": "GLICER Search as-you-type",
-    "autoload": {
-        "psr-0": {
-            "": "src/"
+    "name": "glicer/search",
+    "type": "library",
+    "description": "A small Algolia and Elasticsearch alternative",
+    "keywords": ["search", "algolia", "elasticsearch","as-you-type","autocomplete"],
+    "homepage": "https://github.com/emmanuelroecker/js-php-search-as-you-type",
+    "license": "GNU",
+    "authors": [
+        {
+            "name": "Emmanuel ROECKER",
+            "homepage": "http://dev.glicer.com"
+        },
+        {
+            "name": "Rym BOUCHAGOUR",
+            "homepage": "http://dev.glicer.com"
         }
-    },
+    ],
     "require": {
         "php": ">=5.4",
         "symfony/console": "2.3.*",
@@ -16,11 +23,18 @@
         "symfony/yaml": "2.3.*",
         "symfony/stopwatch": "2.3.*"
     },
-    "scripts": {
-        "post-install-cmd": [
-        ],
-        "post-update-cmd": [
-        ]
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "symfony/process": "2.3.*"
     },
-    "minimum-stability": "stable"
+    "autoload": {
+        "psr-4": {
+            "GlSearchEngine\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GlSearchEngine\\Tests\\": "tests/"
+        }
+    }
 }

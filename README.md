@@ -1,6 +1,9 @@
 # js-php-search-as-you-type
 
-A small [Algolia](https://www.algolia.com/) and [Elasticsearch](https://www.elastic.co/products/elasticsearch) alternative : autocomplete, search and browsing as-you-type
+A small [Algolia](https://www.algolia.com/) and [Elasticsearch](https://www.elastic.co/products/elasticsearch) alternative.
+
+Autocomplete
+Search and browsing as-you-type
 
 ## Licence
 
