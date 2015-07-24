@@ -1,31 +1,29 @@
 <?php
 
 /**
- * {SHORT_DESCRIPTION}
  *
  * PHP version 5.4
  *
  * @category  GLICER
- * @package   Contact
- * @author    Emmanuel ROECKER <emmanuel.roecker@gmail.com>
- * @author    Rym BOUCHAGOUR <rym.bouchagour@free.fr>
- * @copyright 2012-2013 GLICER
- * @license   Proprietary property of GLICER
- * @link      http://www.glicer.com
+ * @author    Emmanuel ROECKER
+ * @author    Rym BOUCHAGOUR
+ * @copyright 2015 GLICER
+ * @license   GNU 2
+ * @link      http://dev.glicer.com/
  *
- * Created : 19/03/15
+ * Created : 24/07/15
  * File : application.php
  *
  */
 
 require_once('vendor/autoload.php');
 
-include('command/searchEngine.php');
+include('command/GlServerEngine.php');
 
 use Symfony\Component\Console\Application;
 
-$command = new searchEngine();
+$glservercommand = new GlServerEngine();
 
 $application = new Application();
-$application->add($command);
+$application->add($glservercommand);
 $application->run();

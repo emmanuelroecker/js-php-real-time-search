@@ -1,31 +1,12 @@
 <?php
-
-/**
- * {SHORT_DESCRIPTION}
- *
- * PHP version 5.4
- *
- * @category  GLICER
- * @package   Contact
- * @author    Emmanuel ROECKER <emmanuel.roecker@gmail.com>
- * @author    Rym BOUCHAGOUR <rym.bouchagour@free.fr>
- * @copyright 2012-2013 GLICER
- * @license   Proprietary property of GLICER
- * @link      http://www.glicer.com
- *
- * Created : 19/07/15
- * File : rank.php
- *
- */
-
 /*
-Adapted from C function available at http://www.sqlite.org/fts3.html#appendix_a
+    Adapted from C function available at http://www.sqlite.org/fts3.html#appendix_a
 
-Use like this:
-$db = new SQLite3('database.db');
-$db->createFunction('rank', 'sql_rank');
-$db->query('CREATE VIRTUAL TABLE products USING fts4 (id INTEGER, title TEXT, description TEXT);');
-$db->query('SELECT * FROM products WHERE products MATCH \'Computer\' ORDER BY rank(matchinfo(products), 0, 1.0, 0.5) DESC;');
+    Use like this:
+    $db = new SQLite3('database.db');
+    $db->createFunction('rank', 'sql_rank');
+    $db->query('CREATE VIRTUAL TABLE products USING fts4 (id INTEGER, title TEXT, description TEXT);');
+    $db->query('SELECT * FROM products WHERE products MATCH \'Computer\' ORDER BY rank(matchinfo(products), 0, 1.0, 0.5) DESC;');
 */
 
 function sql_rank($aMatchInfo)
