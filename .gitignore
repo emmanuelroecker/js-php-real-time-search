@@ -6,3 +6,4 @@ tests/result/
 vendor/
 .idea
 .DS_STORE
+*.db
