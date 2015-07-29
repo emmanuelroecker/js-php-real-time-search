@@ -5,6 +5,14 @@ A small [Algolia](https://www.algolia.com/) and [Elasticsearch](https://www.elas
 Autocomplete
 Search and browsing as-you-type
 
+## Running Tests
+
+Launch from command line :
+
+```console
+vendor\bin\phpunit
+```
+
 ## Licence
 
 GNU 2
