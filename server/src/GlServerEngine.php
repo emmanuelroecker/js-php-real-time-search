@@ -21,7 +21,6 @@ namespace GlSearchEngine;
 
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -51,19 +50,20 @@ class GlServerEngine
     private $output;
 
     /**
-     * @param string          $dbname
-     * @param OutputInterface $output
-     * @param boolean         $delete
+     * @param string          $dbname database name
+     * @param OutputInterface $output standard verbode output
+     * @param boolean         $renew  if true delete and recreate database
+     *
+     * @throws \Exception
      */
-    public function __construct($dbname, OutputInterface $output, $delete = false)
+    public function __construct($dbname, OutputInterface $output, $renew = false)
     {
         $this->fs     = new Filesystem();
         $this->output = $output;
         $this->dbname = $dbname;
 
-        if ($delete) {
+        if ($renew) {
             if ($this->fs->exists($this->dbname)) {
-                $this->output->writeln("Delete file db : " . $this->dbname);
                 $this->fs->remove($this->dbname);
             }
         }
@@ -161,55 +161,15 @@ class GlServerEngine
     }
 
     /**
-     * @param string $query
-     *
-     * @throws \Exception
+     * @param string   $table
+     * @param array    $fields
+     * @param string   $yaml
+     * @param callable $callback
      */
-    private function search($query)
-    {
-        $query = $this->normalize($query);
-
-        $stopwatch = new Stopwatch();
-        $stopwatch->start('query');
-
-        $db = new \SQLite3($this->dbname);
-
-        $querySQL = "SELECT json,offsets FROM tableJson JOIN (SELECT docid, offsets({$this->tablenameIndex}) AS offsets
-                     FROM {$this->tablenameIndex} WHERE {$this->tablenameIndex} MATCH '$query') USING (docid)";
-
-        $result = $db->query($querySQL);
-        if ($result === false) {
-            $this->output->writeln($querySQL);
-            $this->output->writeln($db->lastErrorCode() . " : " . $db->lastErrorMsg());
-            throw new \Exception("cannot query");
-        }
-
-        $list = [];
-        while ($row = $result->fetchArray(SQLITE3_NUM)) {
-            $list[][0] = $row[0];
-            $list[][1] = $row[1];
-        }
-        $event = $stopwatch->stop('query');
-
-        foreach ($list as $elem) {
-            var_dump($elem);
-        }
-
-        $periods = $event->getPeriods();
-        foreach ($periods as $period) {
-            $this->output->writeln("Time : " . $period->getDuration() . " ms");
-        }
-    }
-
-    /**
-     * @param string $table
-     * @param string $yaml
-     * @param array  $fields
-     */
-    public function importYaml($table, $yaml, $fields)
+    public function importYaml($table, $fields, $yaml, callable $callback)
     {
         try {
-            $list = Yaml::parse(
+            $data = Yaml::parse(
                         file_get_contents(
                             $yaml
                         )
@@ -220,17 +180,18 @@ class GlServerEngine
             return;
         }
 
-        $this->import($table, $list, $fields);
+        $this->import($table, $fields, $data, $callback);
     }
 
     /**
-     * @param string $table
-     * @param array  $list
-     * @param array  $fields
+     * @param string   $table
+     * @param array    $fields
+     * @param array    $data
+     * @param callable $callback
      *
      * @throws \Exception
      */
-    public function import($table, $list, $fields)
+    public function import($table, $fields, $data, callable $callback)
     {
         $tableJson = $table . "Json";
 
@@ -251,7 +212,7 @@ class GlServerEngine
         }
 
         $id = 0;
-        foreach ($list as $elem) {
+        foreach ($data as $elem) {
             $values = [];
             foreach ($fields as $field) {
                 if (isset($elem[$field])) {
@@ -263,14 +224,14 @@ class GlServerEngine
             if (sizeof($values) > 0) {
                 $json         = \SQLite3::escapeString(json_encode($elem));
                 $valuesString = implode("','", $values);
-                $insertSQL    = "INSERT INTO tableJson VALUES ($id,'$json')";
+                $insertSQL    = "INSERT INTO $tableJson VALUES ($id,'$json')";
                 if ($this->db->exec($insertSQL) === false) {
                     $this->output->writeln($insertSQL);
                     $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
                     throw new \Exception("cannot insert");
                 }
 
-                $insertSQL = "INSERT INTO {$table}(docid,'$fields') VALUES ($id,'{$valuesString}')";
+                $insertSQL = "INSERT INTO {$table}(docid,'$sqlfields') VALUES ($id,'{$valuesString}')";
                 if ($this->db->exec($insertSQL) === false) {
                     $this->output->writeln($insertSQL);
                     $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
@@ -278,6 +239,7 @@ class GlServerEngine
                 }
                 $id++;
             }
+            $callback();
         }
     }
 }

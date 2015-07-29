@@ -18,11 +18,12 @@
 
 require_once('vendor/autoload.php');
 
-include('command/GlServerEngine.php');
+include('command/GlSearchImport.php');
 
 use Symfony\Component\Console\Application;
+use GlSearchImport\GlSearchImport;
 
-$glservercommand = new GlServerEngine();
+$glservercommand = new GlSearchImport();
 
 $application = new Application();
 $application->add($glservercommand);
