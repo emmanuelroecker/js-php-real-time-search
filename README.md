@@ -5,7 +5,14 @@ A small [Algolia](https://www.algolia.com/) and [Elasticsearch](https://www.elas
 Autocomplete
 Search and browsing as-you-type
 
-## Running Tests
+
+## Running Client Tests
+
+Open with your favorite browser :
+
+client/tests/test.html
+
+## Running Server Tests
 
 Launch from command line :
 

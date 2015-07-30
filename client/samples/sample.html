@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="jquery.min.js"></script>
+    <script src="../src/glsearch.js"></script>
+    <style>
+        b {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+<form>
+    <fieldset>
+        <label for="target">Search : </label>
+        <input id="target" type="text">
+    </fieldset>
+</form>
+<div id="result">
+
+</div>
+<script>
+    var view = function (fields) {
+        var html = "";
+        for (var field in fields) {
+            html += fields[field] + "<br>";
+        }
+        return html;
+    };
+
+    var client = new glSearch("http://lyon.glicer.com/search/search.php?q=");
+    console.log('start');
+    $("#target").keyup(function (event) {
+        var val = $(this).val();
+        var result = $('#result');
+        var html = "<div>";
+        client.query(val,
+                function (value) {
+                    html += "<div>";
+                    html += view(value.value);
+                    html += "</div>";
+                    html += "<br>";
+                },
+                function (values) {
+                    if (values === null) {
+                        result.empty();
+                    } else {
+                        html += "</div>";
+                        result.empty();
+                        result.append(html);
+                    }
+                });
+    });
+</script>
+</body>
+</html>
