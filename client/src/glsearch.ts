@@ -62,7 +62,7 @@ class glSearch {
         return sentence;
     }
 
-    private toQuery(words:string[]):string {
+    public toQuery(words:string[]):string {
         var length:number = words.length;
         var result:string = "";
         var first:boolean = true;
@@ -109,7 +109,7 @@ class glSearch {
         return result;
     }
 
-    private highlights(query:string[], fields:string[], result) {
+    public highlights(query:string[], fields:string[], result) {
         var coords = result.highlights.split(/ /);
         var length = coords.length;
 

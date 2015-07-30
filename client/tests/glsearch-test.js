@@ -24,5 +24,19 @@ test("remove diacritics characters", function () {
     deepEqual(result, ["ca", "un", "ete", "les", "etre", "chez", "chere", "coeur", "zoulous"]);
     result = search.normalize('äâàéèëêïîöôùüûœç');
     deepEqual(result, ["aaaeeeeiioouuuoec"]);
+    result = search.normalize("economi econo uni universel");
+    deepEqual(result, ["economi", "universel"]);
+});
+test("to query", function () {
+    var search = new glSearch("");
+    var query = search.toQuery(["maison", "voiture"]);
+    equal(query, "maison* voiture*");
+});
+test("highlights", function () {
+    var search = new glSearch("");
+    var data = { value: { field1: "j'aime le word1", field2: "je préfère le word25 qui est meilleur" }, highlights: "0 0 10 5 1 1 14 6" };
+    search.highlights(["word1", "word2"], ["field1", "field2"], data);
+    equal(data.value.field1, "j'aime le <b>word1</b>");
+    equal(data.value.field2, "je préfère le <b>word2</b>5 qui est meilleur");
 });
 //# sourceMappingURL=glsearch-test.js.map
