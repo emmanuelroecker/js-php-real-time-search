@@ -45,7 +45,7 @@ class GlServerSearch
     public function __construct($dbname, $table, $fields)
     {
         $this->dbname = $dbname;
-        $this->db     = new \SQLite3($this->dbname);
+        $this->db     = new \SQLite3($this->dbname, SQLITE3_OPEN_READONLY);
 
         $this->jsonStart = '{"fields":["' . implode('","', $fields) . '"],"results":[';
 
