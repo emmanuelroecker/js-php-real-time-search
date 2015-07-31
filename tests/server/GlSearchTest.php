@@ -22,6 +22,7 @@ use GlSearchEngine\GlServerSearch;
 
 /**
  * @covers \GlSearchEngine\GlServerSearch
+ * @backupGlobals disabled
  */
 class GlSearchTest extends \PHPUnit_Framework_TestCase
 {
