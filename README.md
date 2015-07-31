@@ -5,6 +5,7 @@ A small [Algolia](https://www.algolia.com/) and [Elasticsearch](https://www.elas
 Autocomplete
 Search and browsing as-you-type
 
+![Sample Search](https://github.com/emmanuelroecker/js-php-search-as-you-type/doc/search.gif)
 
 [SQLite FTS4](https://sqlite.org/fts3.html)
 
