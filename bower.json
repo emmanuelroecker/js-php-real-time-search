@@ -1,0 +1,14 @@
+{
+    "name": "js-search-as-you-type",
+    "version": "0.0.1",
+    "description": "Glicer Search As You Type",
+    "main": [
+        "src/glsearch.js"
+    ],
+    "ignore": [
+        ".*",
+        "samples",
+        "src/*.php",
+        "tests"
+    ]
+}
