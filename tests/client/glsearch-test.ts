@@ -16,7 +16,7 @@
  */
 
 /// <reference path="qunit.d.ts" />
-/// <reference path="../src/glsearch.ts" />
+/// <reference path="../../src/glsearch.ts" />
 
 test("remove diacritics characters", function () {
     var search = new glSearch("");

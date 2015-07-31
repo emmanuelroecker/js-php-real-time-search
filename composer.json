@@ -34,7 +34,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "GlSearchEngine\\Tests\\": "tests/"
+            "GlSearchEngine\\Tests\\": "tests/server/"
         }
     }
 }

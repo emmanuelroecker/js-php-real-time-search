@@ -6,11 +6,13 @@ Autocomplete
 Search and browsing as-you-type
 
 
+[SQLite FTS4](https://sqlite.org/fts3.html)
+
 ## Running Client Tests
 
 Open with your favorite browser :
 
-client/tests/test.html
+tests/client/test.html
 
 ## Running Server Tests
 

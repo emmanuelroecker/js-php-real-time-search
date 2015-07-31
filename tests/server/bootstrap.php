@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 use GlSearchEngine\GlServerEngine;
 use Symfony\Component\Console\Output\ConsoleOutput;
