@@ -39,12 +39,12 @@
         client.query(val,
                 function (value) {
                     html += "<div>";
-                    html += view(value.value);
+                    html += view(value);
                     html += "</div>";
                     html += "<br>";
                 },
                 function (values) {
-                    if (values === null) {
+                    if (values == null) {
                         result.empty();
                     } else {
                         html += "</div>";
