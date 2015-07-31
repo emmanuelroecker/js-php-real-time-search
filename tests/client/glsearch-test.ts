@@ -60,3 +60,14 @@ test("highlights", function () {
     equal(data.value.field1, "j'aime le <b>word1</b>");
     equal(data.value.field2, "je préfère le <b>word2</b>5 qui est meilleur");
 });
+
+asyncTest("query on server", function () {
+    var search = new glSearch("http://localhost:1349/search.php?q=");
+
+    search.query("rest chaponnay", function (value) {
+        equal(value.title, "Aklé - Le Comptoir à Mezzés");
+        equal(value.tags, "<b>rest</b>aurant libanais monde");
+        equal(value.address, "108 rue <b>Chaponnay</b>");
+    }, function (values) {
+    });
+});

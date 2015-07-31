@@ -7,3 +7,4 @@ $output = new ConsoleOutput();
 
 include("WebServer.php");
 include("InitData.php");
+include("ClientTests.php");
