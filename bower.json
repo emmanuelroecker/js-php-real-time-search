@@ -7,6 +7,7 @@
     ],
     "ignore": [
         ".*",
+        "doc",
         "samples",
         "src/*.php",
         "tests"
