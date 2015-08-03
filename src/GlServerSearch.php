@@ -53,18 +53,18 @@ class GlServerSearch
         $tableFullText = $table . "FT";
         $this->stmt    = $this->db->prepare(
                                   "SELECT json,offsets FROM $tableFilter JOIN (SELECT docid, offsets($tableFullText) AS offsets
-           FROM $tableFullText WHERE $tableFullText MATCH :query) USING (docid)"
+           FROM $tableFullText WHERE $tableFullText MATCH :queryFullText) USING (docid)"
         );
     }
 
     /**
-     * @param string $query
+     * @param string $queryFullText
      *
      * @return string
      */
-    public function queryJson($query)
+    public function queryJson($queryFullText)
     {
-        $this->stmt->bindValue(":query", $query, SQLITE3_TEXT);
+        $this->stmt->bindValue(":queryFullText", $queryFullText, SQLITE3_TEXT);
         $result = $this->stmt->execute();
 
         $json = $this->jsonStart;
