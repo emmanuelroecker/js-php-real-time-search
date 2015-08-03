@@ -23,6 +23,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GlServerIndex
 {
+    const SQLITE_ERROR_CODE_CONSTRAINT = 19;
+
     /**
      * @var \SQLite3
      */
@@ -62,6 +64,18 @@ class GlServerIndex
      * @var array
      */
     private $fieldsFilter;
+
+
+    /**
+     * @var \SQLite3Stmt
+     */
+    private $stmtInsertFilter;
+
+
+    /**
+     * @var \SQLite3Stmt
+     */
+    private $stmtInsertFullText;
 
     /**
      * @param string $s
@@ -185,6 +199,14 @@ class GlServerIndex
             $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
             throw new \Exception("cannot create table : " . $this->tableFullText);
         }
+
+
+        $this->stmtInsertFilter = $this->db->prepare("INSERT INTO {$this->tableFilter} VALUES (:id, :uid, :json)");
+
+
+        $values        = implode(",", array_fill(0, sizeof($this->fieldsFullText), '?'));
+        $prepareInsert = "INSERT INTO {$this->tableFullText}(docid,'{$this->sqlfieldsFullText}') VALUES (?,$values)";
+        $this->stmtInsertFullText = $this->db->prepare($prepareInsert);
     }
 
     /**
@@ -209,26 +231,32 @@ class GlServerIndex
                 }
             }
             if (sizeof($values) > 0) {
-                $json         = \SQLite3::escapeString(json_encode($elem));
-                $valuesString = implode("','", $values);
+                $json = \SQLite3::escapeString(json_encode($elem));
 
-                $insertSQL = "INSERT INTO {$this->tableFilter} VALUES ($id, '$uid', '$json')";
-                if (@$this->db->exec($insertSQL) === false) {
+                @$this->stmtInsertFilter->reset();
+                @$this->stmtInsertFullText->reset();
+
+                $this->stmtInsertFilter->bindValue(":id", $id, SQLITE3_INTEGER);
+                $this->stmtInsertFilter->bindValue(":uid", $uid, SQLITE3_TEXT);
+                $this->stmtInsertFilter->bindValue(":json", $json, SQLITE3_TEXT);
+                if (@$this->stmtInsertFilter->execute() === false) {
                     $lasterror = $this->db->lastErrorCode();
-                    if ($lasterror != 19) {
-                        $this->output->writeln($insertSQL);
+                    if ($lasterror != self::SQLITE_ERROR_CODE_CONSTRAINT) {
                         $this->output->writeln($lasterror . " : " . $this->db->lastErrorMsg());
-                        throw new \Exception("cannot insert");
+                        throw new \Exception("cannot insert filter fields");
                     } else {
                         continue;
                     }
                 }
 
-                $insertSQL = "INSERT INTO {$this->tableFullText}(docid,'{$this->sqlfieldsFullText}') VALUES ($id,'$valuesString')";
-                if ($this->db->exec($insertSQL) === false) {
-                    $this->output->writeln($insertSQL);
+                $num = 1;
+                $this->stmtInsertFullText->bindValue($num++, $id, SQLITE3_INTEGER);
+                foreach ($values as $valuestring) {
+                    $this->stmtInsertFullText->bindValue($num++, $valuestring, SQLITE3_TEXT);
+                }
+                if ($this->stmtInsertFullText->execute() === false) {
                     $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
-                    throw new \Exception("cannot insert");
+                    throw new \Exception("cannot insert full text fields");
                 }
                 $id++;
             }
