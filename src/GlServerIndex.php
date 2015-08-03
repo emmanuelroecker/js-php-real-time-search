@@ -151,14 +151,14 @@ class GlServerIndex
 
         $this->fieldsFilter   = $fieldsFilter;
         $this->fieldsFullText = $fieldsFullText;
-        $tableFilter    = "{$table}F";
-        $tableFullText  = "{$table}FT";
+        $tableFilter          = "{$table}F";
+        $tableFullText        = "{$table}FT";
 
         if (sizeof($fieldsFilter) > 0) {
             $sqlfieldsFilter = implode("','", $fieldsFilter);
-            $createSQLFilter       = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json, '{$sqlfieldsFilter}')";
+            $createSQLFilter = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json, '{$sqlfieldsFilter}')";
         } else {
-            $createSQLFilter       = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json)";
+            $createSQLFilter = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json)";
         }
 
         if ($this->db->exec($createSQLFilter) === false) {
@@ -172,7 +172,7 @@ class GlServerIndex
         }
 
         $sqlfieldsFullText = implode("','", $fieldsFullText);
-        $createSQLFullText       = "CREATE VIRTUAL TABLE {$tableFullText} USING fts4('{$sqlfieldsFullText}');";
+        $createSQLFullText = "CREATE VIRTUAL TABLE {$tableFullText} USING fts4('{$sqlfieldsFullText}');";
         if ($this->db->exec($createSQLFullText) === false) {
             $this->output->writeln($createSQLFullText);
             $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
@@ -188,6 +188,49 @@ class GlServerIndex
         $this->stmtInsertFullText = $this->db->prepare($prepareInsert);
     }
 
+
+    /**
+     * @param $data
+     *
+     * @return array
+     */
+    private function valuesFullText($data)
+    {
+        $valuesFullText = [];
+        foreach ($this->fieldsFullText as $fieldFullText) {
+            if (isset($data[$fieldFullText])) {
+                $valuesFullText[$fieldFullText] = $this->normalize($data[$fieldFullText]);
+            } else {
+                $valuesFullText[$fieldFullText] = '';
+            }
+        }
+
+        return $valuesFullText;
+    }
+
+    /**
+     * @param $data
+     *
+     * @return array
+     */
+    private function valuesFilter($data)
+    {
+        $valuesFilter = [];
+        foreach ($this->fieldsFilter as $fieldFilter) {
+            if (isset($data[$fieldFilter])) {
+                if (is_string($data[$fieldFilter])) {
+                    $valuesFilter[$fieldFilter] = \SQLite3::escapeString($data[$fieldFilter]);
+                } else {
+                    $valuesFilter[$fieldFilter] = $data[$fieldFilter];
+                }
+            } else {
+                $valuesFilter[$fieldFilter] = '';
+            }
+        }
+
+        return $valuesFilter;
+    }
+
     /**
      * @param int      $id
      * @param array    $data
@@ -201,21 +244,19 @@ class GlServerIndex
         callable $callback
     ) {
         foreach ($data as $uid => $elem) {
-            $values = [];
-            foreach ($this->fieldsFullText as $field) {
-                if (isset($elem[$field])) {
-                    $values[$field] = $this->normalize($elem[$field]);
-                } else {
-                    $values[$field] = '';
-                }
-            }
-            if (sizeof($values) > 0) {
+            $valuesFullText = $this->valuesFullText($elem);
+            $valuesFilter = $this->valuesFilter($elem);
+
+            if (sizeof($valuesFullText) > 0) {
                 $json = \SQLite3::escapeString(json_encode($elem));
 
                 $num = 1;
                 $this->stmtInsertFilter->bindValue($num++, $id, SQLITE3_INTEGER);
                 $this->stmtInsertFilter->bindValue($num++, $uid, SQLITE3_TEXT);
                 $this->stmtInsertFilter->bindValue($num++, $json, SQLITE3_TEXT);
+                foreach ($valuesFilter as $valueFilter) {
+                    $this->stmtInsertFilter->bindValue($num++, $valueFilter);
+                }
                 if (@$this->stmtInsertFilter->execute() === false) {
                     $lasterror = $this->db->lastErrorCode();
                     if ($lasterror != self::SQLITE_ERROR_CODE_CONSTRAINT) {
@@ -229,8 +270,8 @@ class GlServerIndex
 
                 $num = 1;
                 $this->stmtInsertFullText->bindValue($num++, $id, SQLITE3_INTEGER);
-                foreach ($values as $valuestring) {
-                    $this->stmtInsertFullText->bindValue($num++, $valuestring, SQLITE3_TEXT);
+                foreach ($valuesFullText as $valueFullText) {
+                    $this->stmtInsertFullText->bindValue($num++, $valueFullText, SQLITE3_TEXT);
                 }
                 if ($this->stmtInsertFullText->execute() === false) {
                     $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
