@@ -35,25 +35,6 @@ class GlServerIndex
      */
     private $output;
 
-    /**
-     * @var string
-     */
-    private $tableFilter;
-
-    /**
-     * @var string
-     */
-    private $tableFullText;
-
-    /**
-     * @var string
-     */
-    private $sqlfieldsFilter;
-
-    /**
-     * @var string
-     */
-    private $sqlfieldsFullText;
 
     /**
      * @var array
@@ -170,42 +151,40 @@ class GlServerIndex
 
         $this->fieldsFilter   = $fieldsFilter;
         $this->fieldsFullText = $fieldsFullText;
-        $this->tableFilter    = "{$table}F";
-        $this->tableFullText  = "{$table}FT";
+        $tableFilter    = "{$table}F";
+        $tableFullText  = "{$table}FT";
 
         if (sizeof($fieldsFilter) > 0) {
-            $this->sqlfieldsFilter = implode("','", $fieldsFilter);
-            $createSQLFilter       = "CREATE TABLE {$this->tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json, '{$this->sqlfieldsFilter}')";
+            $sqlfieldsFilter = implode("','", $fieldsFilter);
+            $createSQLFilter       = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json, '{$sqlfieldsFilter}')";
         } else {
-            $this->sqlfieldsFilter = null;
-            $createSQLFilter       = "CREATE TABLE {$this->tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json)";
+            $createSQLFilter       = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json)";
         }
 
         if ($this->db->exec($createSQLFilter) === false) {
             $this->output->writeln($createSQLFilter);
             $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
-            throw new \Exception("cannot create table : " . $this->tableFilter);
+            throw new \Exception("cannot create table : " . $tableFilter);
         }
 
         if (sizeof($fieldsFullText) <= 0) {
-
             throw new \Exception("You must have at least one field full text");
         }
 
-        $this->sqlfieldsFullText = implode("','", $fieldsFullText);
-        $createSQLFullText       = "CREATE VIRTUAL TABLE {$this->tableFullText} USING fts4('{$this->sqlfieldsFullText}');";
+        $sqlfieldsFullText = implode("','", $fieldsFullText);
+        $createSQLFullText       = "CREATE VIRTUAL TABLE {$tableFullText} USING fts4('{$sqlfieldsFullText}');";
         if ($this->db->exec($createSQLFullText) === false) {
             $this->output->writeln($createSQLFullText);
             $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
-            throw new \Exception("cannot create table : " . $this->tableFullText);
+            throw new \Exception("cannot create table : " . $tableFullText);
         }
 
 
-        $this->stmtInsertFilter = $this->db->prepare("INSERT INTO {$this->tableFilter} VALUES (:id, :uid, :json)");
+        $this->stmtInsertFilter = $this->db->prepare("INSERT INTO {$tableFilter} VALUES (?, ?, ?)");
 
 
-        $values        = implode(",", array_fill(0, sizeof($this->fieldsFullText), '?'));
-        $prepareInsert = "INSERT INTO {$this->tableFullText}(docid,'{$this->sqlfieldsFullText}') VALUES (?,$values)";
+        $values                   = implode(",", array_fill(0, sizeof($this->fieldsFullText), '?'));
+        $prepareInsert            = "INSERT INTO {$tableFullText}(docid,'{$sqlfieldsFullText}') VALUES (?,$values)";
         $this->stmtInsertFullText = $this->db->prepare($prepareInsert);
     }
 
@@ -233,18 +212,17 @@ class GlServerIndex
             if (sizeof($values) > 0) {
                 $json = \SQLite3::escapeString(json_encode($elem));
 
-                @$this->stmtInsertFilter->reset();
-                @$this->stmtInsertFullText->reset();
-
-                $this->stmtInsertFilter->bindValue(":id", $id, SQLITE3_INTEGER);
-                $this->stmtInsertFilter->bindValue(":uid", $uid, SQLITE3_TEXT);
-                $this->stmtInsertFilter->bindValue(":json", $json, SQLITE3_TEXT);
+                $num = 1;
+                $this->stmtInsertFilter->bindValue($num++, $id, SQLITE3_INTEGER);
+                $this->stmtInsertFilter->bindValue($num++, $uid, SQLITE3_TEXT);
+                $this->stmtInsertFilter->bindValue($num++, $json, SQLITE3_TEXT);
                 if (@$this->stmtInsertFilter->execute() === false) {
                     $lasterror = $this->db->lastErrorCode();
                     if ($lasterror != self::SQLITE_ERROR_CODE_CONSTRAINT) {
                         $this->output->writeln($lasterror . " : " . $this->db->lastErrorMsg());
                         throw new \Exception("cannot insert filter fields");
                     } else {
+                        @$this->stmtInsertFilter->reset();
                         continue;
                     }
                 }
