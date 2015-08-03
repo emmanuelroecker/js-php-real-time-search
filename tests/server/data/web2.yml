@@ -1,0 +1,43 @@
+jp_coureur_des_berges:
+    title : "Jean-Pierre, le coureur des berges du Rhône"
+    sociallink: "https://fr-fr.facebook.com/pages/Jean-Pierre-le-coureur-des-berges-du-Rh%C3%B4ne/101738059870725"
+    rel: ""
+    tags: "athlète papy joggeur short rouge"
+    description: |
+                  Courir, courir, et encore courir... sans jamais s'arrêter ...
+gym_suedoise_lyon:
+    title : "Gym Suédoise Lyon"
+    sociallink: "https://fr-fr.facebook.com/gymsuedoise.lyon"
+    rel: ""
+    videolink: "https://www.youtube.com/embed/r0xiohshSgU"
+    moviethumb: "http://img.youtube.com/vi/r0xiohshSgU/0.jpg"
+    tags: "sport loisir"
+    description: |
+                  En cercle autour de l'animateur, les participants reproduisent des mouvements simples
+                  à exécuter au rythme d'une musique entraînante ...
+126:
+    title: "Le 126"
+    sociallink: "https://www.facebook.com/Le126/photos_stream"
+    rel: ""
+    tags: "restaurant evenement gourmet français"
+    gps: "45.7689867,4.8566032"
+    description: |
+                   Solution de continuité
+    address: "126 rue de Sèze"
+    city: "Lyon 6"
+    phone: "04 78 52 74 34"
+    article:
+          - title: "scène de film à laquelle on pense en sortant"
+            link: "https://www.youtube.com/embed/33MTqal5N5Y?autoplay=true&rel=0&autohide=2"
+lezola_cinema:
+    title: "Le Zola"
+    link: "http://www.lezola.com/"
+    sociallink: "https://www.facebook.com/LeZola"
+    tags: "cinéma"
+    gps: "45.77071665,4.87435941736457"
+    description: |
+                  Créé dans les années 20, cette salle de cinéma résiste aux menaces
+                  (présence de multiplexes à proximité, cartes illimitées, invasion de films commerciaux) ...
+    address: "17 cours Emile Zola"
+    city: "69100 Villeurbanne"
+    phone: "04 78 93 42 65"

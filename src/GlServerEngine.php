@@ -161,41 +161,16 @@ class GlServerEngine
     }
 
     /**
-     * @param string   $table
-     * @param array    $fields
-     * @param string   $yaml
-     * @param callable $callback
-     */
-    public function importYaml($table, $fields, $yaml, callable $callback)
-    {
-        try {
-            $data = Yaml::parse(
-                        file_get_contents(
-                            $yaml
-                        )
-            );
-        } catch (ParseException $e) {
-            $this->output->writeln('Unable to parse YAML string: %s', $e->getMessage());
-
-            return;
-        }
-
-        $this->import($table, $fields, $data, $callback);
-    }
-
-    /**
-     * @param string   $table
-     * @param array    $fields
-     * @param array    $data
-     * @param callable $callback
+     * @param string $table
+     * @param array  $fields
      *
      * @throws \Exception
      */
-    public function import($table, $fields, $data, callable $callback)
+    private function create($table, array $fields)
     {
         $tableJson = $table . "Json";
 
-        $createSQL = "CREATE TABLE $tableJson(docid INTEGER PRIMARY KEY, json)";
+        $createSQL = "CREATE TABLE $tableJson(docid INTEGER PRIMARY KEY, uid UNIQUE, json)";
         if ($this->db->exec($createSQL) === false) {
             $this->output->writeln($createSQL);
             $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
@@ -210,9 +185,23 @@ class GlServerEngine
             $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
             throw new \Exception("cannot create table : " . $table);
         }
+    }
 
-        $id = 0;
-        foreach ($data as $elem) {
+    /**
+     * @param int      $id
+     * @param string   $table
+     * @param array    $fields
+     * @param array    $data
+     * @param callable $callback
+     *
+     * @throws \Exception
+     */
+    private function import(&$id, $table, array $fields, array $data, callable $callback)
+    {
+        $tableJson = $table . "Json";
+        $sqlfields = implode("','", $fields);
+
+        foreach ($data as $uid => $elem) {
             $values = [];
             foreach ($fields as $field) {
                 if (isset($elem[$field])) {
@@ -224,14 +213,20 @@ class GlServerEngine
             if (sizeof($values) > 0) {
                 $json         = \SQLite3::escapeString(json_encode($elem));
                 $valuesString = implode("','", $values);
-                $insertSQL    = "INSERT INTO $tableJson VALUES ($id,'$json')";
-                if ($this->db->exec($insertSQL) === false) {
-                    $this->output->writeln($insertSQL);
-                    $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
-                    throw new \Exception("cannot insert");
+
+                $insertSQL    = "INSERT INTO $tableJson VALUES ($id, '$uid', '$json')";
+                if (@$this->db->exec($insertSQL) === false) {
+                    $lasterror = $this->db->lastErrorCode();
+                    if ($lasterror != 19) {
+                        $this->output->writeln($insertSQL);
+                        $this->output->writeln($lasterror . " : " . $this->db->lastErrorMsg());
+                        throw new \Exception("cannot insert");
+                    } else {
+                        continue;
+                    }
                 }
 
-                $insertSQL = "INSERT INTO {$table}(docid,'$sqlfields') VALUES ($id,'{$valuesString}')";
+                $insertSQL = "INSERT INTO {$table}(docid,'$sqlfields') VALUES ($id,'$valuesString')";
                 if ($this->db->exec($insertSQL) === false) {
                     $this->output->writeln($insertSQL);
                     $this->output->writeln($this->db->lastErrorCode() . " : " . $this->db->lastErrorMsg());
@@ -240,6 +235,48 @@ class GlServerEngine
                 $id++;
             }
             $callback();
+        }
+    }
+
+    /**
+     * @param int      $startid
+     * @param string   $table
+     * @param array    $fields
+     * @param string   $yaml
+     * @param callable $callback
+     */
+    private function importOneYaml(&$startid, $table, array $fields, $yaml, callable $callback)
+    {
+        try {
+            $data = Yaml::parse(
+                        file_get_contents(
+                            $yaml
+                        )
+            );
+        } catch (ParseException $e) {
+            $this->output->writeln('Unable to parse YAML string: %s', $e->getMessage());
+
+            return;
+        }
+        $this->import($startid, $table, $fields, $data, $callback);
+    }
+
+    /**
+     * @param string       $table
+     * @param array        $fields
+     * @param array|string $yamls
+     * @param callable     $callback
+     */
+    public function importYaml($table, array $fields, $yamls, callable $callback)
+    {
+        $id = 0;
+        $this->create($table, $fields);
+        if (is_array($yamls)) {
+            foreach ($yamls as $yaml) {
+                $this->importOneYaml($id, $table, $fields, $yaml, $callback);
+            }
+        } else {
+            $this->importOneYaml($id, $table, $fields, $yamls, $callback);
         }
     }
 }

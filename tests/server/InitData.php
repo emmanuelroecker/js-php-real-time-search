@@ -4,16 +4,16 @@ use GlSearchEngine\GlServerEngine;
 
 $output->writeln("Init Database");
 
-$yamlFile = __DIR__ . "/data/web.yml";
-$dbname   = __DIR__ . "/data/web.db";
-$table    = "web";
-$fields   = ['title', 'tags', 'description', 'address', 'city'];
+$yamlFiles = [__DIR__ . "/data/web.yml", __DIR__ . "/data/web2.yml"];
+$dbname    = __DIR__ . "/data/web.db";
+$table     = "web";
+$fields    = ['title', 'tags', 'description', 'address', 'city'];
 
 $engine = new GlServerEngine($dbname, $output, true);
 $engine->importYaml(
        $table,
            $fields,
-           $yamlFile,
+           $yamlFiles,
            function () use ($output) {
                $output->write(".");
            }

@@ -40,4 +40,18 @@ class GlSearchTest extends \PHPUnit_Framework_TestCase
         $this->assertContains("Aklé", $obj->results[0]->value->title);
         $this->assertEquals("1 0 0 10 3 1 8 9", $obj->results[0]->highlights);
     }
+
+    public function testSearch2()
+    {
+        $fields = ['title', 'tags', 'description', 'address', 'city'];
+
+        $search = new GlServerSearch(__DIR__ . "/data/web.db", "web", $fields);
+
+        $json = $search->queryJson("zol*");
+
+        $obj = json_decode($json);
+
+        $this->assertEquals($fields, $obj->fields);
+        $this->assertContains("Le Zola", $obj->results[0]->value->title);
+    }
 } 
