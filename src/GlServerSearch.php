@@ -49,10 +49,11 @@ class GlServerSearch
 
         $this->jsonStart = '{"fields":["' . implode('","', $fields) . '"],"results":[';
 
-        $tableJson  = $table . "Json";
-        $this->stmt = $this->db->prepare(
-                               "SELECT json,offsets FROM $tableJson JOIN (SELECT docid, offsets($table) AS offsets
-           FROM $table WHERE $table MATCH :query) USING (docid)"
+        $tableFilter   = $table . "F";
+        $tableFullText = $table . "FT";
+        $this->stmt    = $this->db->prepare(
+                                  "SELECT json,offsets FROM $tableFilter JOIN (SELECT docid, offsets($tableFullText) AS offsets
+           FROM $tableFullText WHERE $tableFullText MATCH :query) USING (docid)"
         );
     }
 
