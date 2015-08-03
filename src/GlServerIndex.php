@@ -11,8 +11,8 @@
  * @license   GNU 2
  * @link      http://dev.glicer.com/
  *
- * Created : 24/07/15
- * File : GlServerEngine.php
+ * Created : 03/08/15
+ * File : GlServerIndex.php
  *
  */
 
@@ -225,7 +225,7 @@ class GlServerIndex
                     $valuesFilter[$fieldFilter] = $data[$fieldFilter];
                 }
             } else {
-                $valuesFilter[$fieldFilter] = '';
+               $valuesFilter[$fieldFilter] =  null;
             }
         }
 

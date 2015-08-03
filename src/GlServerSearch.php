@@ -26,9 +26,14 @@ class GlServerSearch
     private $dbname;
 
     /**
-     * @var \SQLite3Stmt
+     * @var string
      */
-    private $stmt;
+    private $tableFilter;
+
+    /**
+     * @var string
+     */
+    private $tableFullText;
 
     /**
      * @var string
@@ -38,34 +43,36 @@ class GlServerSearch
     /**
      * @param string $dbname
      * @param string $table
-     * @param array  $fields
+     * @param array  $allFields
      *
      * @throws \Exception
      */
-    public function __construct($dbname, $table, $fields)
+    public function __construct($dbname, $table, array $allFields)
     {
         $this->dbname = $dbname;
         $this->db     = new \SQLite3($this->dbname, SQLITE3_OPEN_READONLY);
 
-        $this->jsonStart = '{"fields":["' . implode('","', $fields) . '"],"results":[';
+        $this->jsonStart = '{"fields":["' . implode('","', $allFields) . '"],"results":[';
 
-        $tableFilter   = $table . "F";
-        $tableFullText = $table . "FT";
-        $this->stmt    = $this->db->prepare(
-                                  "SELECT json,offsets FROM $tableFilter JOIN (SELECT docid, offsets($tableFullText) AS offsets
-           FROM $tableFullText WHERE $tableFullText MATCH :queryFullText) USING (docid)"
-        );
+        $this->tableFilter   = $table . "F";
+        $this->tableFullText = $table . "FT";
     }
 
     /**
-     * @param string $queryFullText
+     * @param string      $queryFullText
+     * @param string|null $queryFilters
      *
      * @return string
      */
-    public function queryJson($queryFullText)
+    public function queryJson($queryFullText, $queryFilters = null)
     {
-        $this->stmt->bindValue(":queryFullText", $queryFullText, SQLITE3_TEXT);
-        $result = $this->stmt->execute();
+        $sql = "SELECT json,offsets FROM {$this->tableFilter} JOIN (SELECT docid, offsets({$this->tableFullText}) AS offsets
+           FROM {$this->tableFullText} WHERE {$this->tableFullText} MATCH '$queryFullText') USING (docid)";
+        if ($queryFilters) {
+            $sql .= " WHERE ($queryFilters)";
+        }
+
+        $result = $this->db->query($sql);
 
         $json = $this->jsonStart;
 
