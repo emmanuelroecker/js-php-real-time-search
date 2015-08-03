@@ -179,8 +179,9 @@ class GlServerIndex
             throw new \Exception("cannot create table : " . $tableFullText);
         }
 
-
-        $this->stmtInsertFilter = $this->db->prepare("INSERT INTO {$tableFilter} VALUES (?, ?, ?)");
+        $values                 = implode(",", array_fill(0, sizeof($this->fieldsFilter), '?'));
+        $prepareInsert          = "INSERT INTO {$tableFilter} VALUES (?, ?, ?, $values)";
+        $this->stmtInsertFilter = $this->db->prepare($prepareInsert);
 
 
         $values                   = implode(",", array_fill(0, sizeof($this->fieldsFullText), '?'));
@@ -245,7 +246,7 @@ class GlServerIndex
     ) {
         foreach ($data as $uid => $elem) {
             $valuesFullText = $this->valuesFullText($elem);
-            $valuesFilter = $this->valuesFilter($elem);
+            $valuesFilter   = $this->valuesFilter($elem);
 
             if (sizeof($valuesFullText) > 0) {
                 $json = \SQLite3::escapeString(json_encode($elem));
