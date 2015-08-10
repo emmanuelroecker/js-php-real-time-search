@@ -41,7 +41,7 @@ test("highlights", function () {
 });
 test("query on server", function (assert) {
     var done = assert.async();
-    var search = new glSearch("http://localhost:1349/search.php?q={q}");
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
     search.query("rest chaponnay", function (value) {
         setTimeout(function () {
             assert.equal(value.title, "Aklé - Le Comptoir à Mezzés");
@@ -52,7 +52,7 @@ test("query on server", function (assert) {
     }, function (values) {
     });
 });
-test("query on server with filte 1r", function (assert) {
+test("query on server with filter 1", function (assert) {
     var done = assert.async();
     var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
     search.query("lyon", function (value) {

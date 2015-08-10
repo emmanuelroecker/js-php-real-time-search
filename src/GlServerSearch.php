@@ -68,7 +68,7 @@ class GlServerSearch
     {
         $sql = "SELECT json,offsets FROM {$this->tableFilter} JOIN (SELECT docid, offsets({$this->tableFullText}) AS offsets
            FROM {$this->tableFullText} WHERE {$this->tableFullText} MATCH '$queryFullText') USING (docid)";
-        if ($queryFilters) {
+        if (($queryFilters && strlen($queryFilters) > 0)) {
             $sql .= " WHERE ($queryFilters)";
         }
 

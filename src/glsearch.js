@@ -125,10 +125,11 @@ var glSearch = (function () {
         }
         var query = this.normalize(words);
         var highlights = this.highlights;
-        var url = this.urlServer.replace('{q}', this.toQuery(query));
-        if (filter) {
-            url = url.replace('{f}', filter);
+        if (!filter) {
+            filter = '';
         }
+        var url = this.urlServer.replace('{q}', this.toQuery(query));
+        url = url.replace('{f}', filter);
         this.httpGet(url, function (data) {
             var fields = data.fields;
             var results = data.results;

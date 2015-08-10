@@ -153,10 +153,12 @@ class glSearch {
         var query:string[] = this.normalize(words);
         var highlights = this.highlights;
 
-        var url = this.urlServer.replace('{q}', this.toQuery(query));
-        if (filter) {
-            url = url.replace('{f}', filter);
+        if (!filter) {
+            filter = '';
         }
+
+        var url = this.urlServer.replace('{q}', this.toQuery(query));
+        url = url.replace('{f}', filter);
         this.httpGet(url, function (data:Response) {
             var fields:string[] = data.fields;
             var results = data.results;
