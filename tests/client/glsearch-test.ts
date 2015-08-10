@@ -24,8 +24,9 @@ test("remove diacritics characters", function () {
 
     equal(result, "ecole");
 
-    result = search.normalize("ça été un être chère cœur chez les zoulous");
-    deepEqual(result, ["ca",
+    result = search.normalize("ça été un être chère à cœur chez les zoulous");
+    deepEqual(result, [
+        "ca",
         "un",
         "ete",
         "les",
@@ -45,9 +46,9 @@ test("remove diacritics characters", function () {
 
 test("to query", function () {
     var search = new glSearch("");
-    var query = search.toQuery(["maison", "voiture"]);
+    var query = search.toQuery(["maison", "voiture","a", "de"]);
 
-    equal(query, "maison* voiture*");
+    equal(query, "maison* voiture* de*");
 });
 
 test("highlights", function () {
@@ -77,6 +78,20 @@ test("query on server", function (assert) {
     });
 });
 
+test("query on server 1", function (assert) {
+    var done = assert.async();
+
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
+
+    search.query("cine z", function (value) {
+    }, function (values) {
+        assert.equal(values.length, 2);
+        assert.equal(values[0].value.title,"<b>Ciné</b>ma Comoedia");
+        assert.equal(values[1].value.title,"Le Zola");
+        done();
+    });
+});
+
 test("query on server 2", function (assert) {
     var done = assert.async();
 
@@ -85,7 +100,6 @@ test("query on server 2", function (assert) {
     search.query("tags:cinema", function (value) {
     }, function (values) {
         setTimeout(function () {
-            console.log(values);
             assert.equal(values.length, 2);
             assert.equal(values[0].value.title,"Cinéma Comoedia");
             assert.equal(values[1].value.title,"Le Zola");

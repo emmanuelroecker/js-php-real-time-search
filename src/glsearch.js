@@ -52,7 +52,7 @@ var glSearch = (function () {
         var result = "";
         var first = true;
         for (var i = 0; i < length; i++) {
-            if (words[i] !== "") {
+            if (words[i].length > 1) {
                 if (!first) {
                     result += " ";
                 }
@@ -70,6 +70,9 @@ var glSearch = (function () {
             return [];
         sentence = this.removeDiacritics(sentence);
         var query = sentence.split(/[^a-z0-9:]+/i);
+        query = query.filter(function (word) {
+            return word.length > 1;
+        });
         //sort min length to max length
         query.sort(function (a, b) {
             return a.length - b.length;

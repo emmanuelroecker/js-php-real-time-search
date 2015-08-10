@@ -20,8 +20,18 @@ test("remove diacritics characters", function () {
     var search = new glSearch("");
     var result = search.normalize("école");
     equal(result, "ecole");
-    result = search.normalize("ça été un être chère cœur chez les zoulous");
-    deepEqual(result, ["ca", "un", "ete", "les", "etre", "chez", "chere", "coeur", "zoulous"]);
+    result = search.normalize("ça été un être chère à cœur chez les zoulous");
+    deepEqual(result, [
+        "ca",
+        "un",
+        "ete",
+        "les",
+        "etre",
+        "chez",
+        "chere",
+        "coeur",
+        "zoulous"
+    ]);
     result = search.normalize('äâàéèëêïîöôùüûœç');
     deepEqual(result, ["aaaeeeeiioouuuoec"]);
     result = search.normalize("economi econo uni universel");
@@ -29,8 +39,8 @@ test("remove diacritics characters", function () {
 });
 test("to query", function () {
     var search = new glSearch("");
-    var query = search.toQuery(["maison", "voiture"]);
-    equal(query, "maison* voiture*");
+    var query = search.toQuery(["maison", "voiture", "a", "de"]);
+    equal(query, "maison* voiture* de*");
 });
 test("highlights", function () {
     var search = new glSearch("");
@@ -52,13 +62,23 @@ test("query on server", function (assert) {
     }, function (values) {
     });
 });
+test("query on server 1", function (assert) {
+    var done = assert.async();
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
+    search.query("cine z", function (value) {
+    }, function (values) {
+        assert.equal(values.length, 2);
+        assert.equal(values[0].value.title, "<b>Ciné</b>ma Comoedia");
+        assert.equal(values[1].value.title, "Le Zola");
+        done();
+    });
+});
 test("query on server 2", function (assert) {
     var done = assert.async();
     var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
     search.query("tags:cinema", function (value) {
     }, function (values) {
         setTimeout(function () {
-            console.log(values);
             assert.equal(values.length, 2);
             assert.equal(values[0].value.title, "Cinéma Comoedia");
             assert.equal(values[1].value.title, "Le Zola");
