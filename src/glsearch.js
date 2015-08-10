@@ -117,14 +117,19 @@ var glSearch = (function () {
         anHttpRequest.open("GET", url, true);
         anHttpRequest.send(null);
     };
-    glSearch.prototype.query = function (words, callbackEach, callbackEnd) {
+    glSearch.prototype.query = function (words, callbackEach, callbackEnd, filter) {
+        if (filter === void 0) { filter = null; }
         if (words.length < this.minQueryLength) {
             callbackEnd(null);
             return;
         }
         var query = this.normalize(words);
         var highlights = this.highlights;
-        this.httpGet(this.urlServer + this.toQuery(query), function (data) {
+        var url = this.urlServer.replace('{q}', this.toQuery(query));
+        if (filter) {
+            url = url.replace('{f}', filter);
+        }
+        this.httpGet(url, function (data) {
             var fields = data.fields;
             var results = data.results;
             results.forEach(function (result) {

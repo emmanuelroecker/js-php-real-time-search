@@ -144,7 +144,7 @@ class glSearch {
         anHttpRequest.send(null);
     }
 
-    public query(words:string, callbackEach:(value:any) => void, callbackEnd:(values:any[]) => void) {
+    public query(words:string, callbackEach:(value:any) => void, callbackEnd:(values:any[]) => void, filter:string = null) {
         if (words.length < this.minQueryLength) {
             callbackEnd(null);
             return;
@@ -152,7 +152,12 @@ class glSearch {
 
         var query:string[] = this.normalize(words);
         var highlights = this.highlights;
-        this.httpGet(this.urlServer + this.toQuery(query), function (data:Response) {
+
+        var url = this.urlServer.replace('{q}', this.toQuery(query));
+        if (filter) {
+            url = url.replace('{f}', filter);
+        }
+        this.httpGet(url, function (data:Response) {
             var fields:string[] = data.fields;
             var results = data.results;
             results.forEach(function (result) {

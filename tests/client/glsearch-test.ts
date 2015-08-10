@@ -61,13 +61,32 @@ test("highlights", function () {
     equal(data.value.field2, "je préfère le <b>word2</b>5 qui est meilleur");
 });
 
-asyncTest("query on server", function () {
-    var search = new glSearch("http://localhost:1349/search.php?q=");
+test("query on server", function (assert) {
+    var done = assert.async();
+
+    var search = new glSearch("http://localhost:1349/search.php?q={q}");
 
     search.query("rest chaponnay", function (value) {
-        equal(value.title, "Aklé - Le Comptoir à Mezzés");
-        equal(value.tags, "<b>rest</b>aurant libanais monde");
-        equal(value.address, "108 rue <b>Chaponnay</b>");
+        setTimeout(function () {
+            assert.equal(value.title, "Aklé - Le Comptoir à Mezzés");
+            assert.equal(value.tags, "<b>rest</b>aurant libanais monde");
+            assert.equal(value.address, "108 rue <b>Chaponnay</b>");
+            done();
+        },500);
     }, function (values) {
     });
+});
+
+test("query on server with filter", function (assert) {
+    var done = assert.async();
+
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
+
+    search.query("lyon", function (value) {
+        setTimeout(function () {
+            assert.equal(value.title, "Gym Suédoise <b>Lyon</b>");
+            done();
+        },500);
+    }, function (values) {
+    }, 'gps IS NULL');
 });
