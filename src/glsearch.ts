@@ -71,7 +71,10 @@ class glSearch {
                 if (!first) {
                     result += " ";
                 }
-                result += words[i] + "*";
+                result += words[i];
+                if (words[i].indexOf(":") < 0) {
+                    result += "*";
+                }
                 first = false;
             }
         }
@@ -82,7 +85,7 @@ class glSearch {
         if (!sentence)
             return [];
         sentence = this.removeDiacritics(sentence);
-        var query = sentence.split(/[^a-z0-9]+/i);
+        var query = sentence.split(/[^a-z0-9:]+/i);
 
         //sort min length to max length
         query.sort(function (a, b) {

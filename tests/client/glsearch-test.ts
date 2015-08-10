@@ -77,6 +77,24 @@ test("query on server", function (assert) {
     });
 });
 
+test("query on server 2", function (assert) {
+    var done = assert.async();
+
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
+
+    search.query("tags:cinema", function (value) {
+    }, function (values) {
+        setTimeout(function () {
+            console.log(values);
+            assert.equal(values.length, 2);
+            assert.equal(values[0].value.title,"Cinéma Comoedia");
+            assert.equal(values[1].value.title,"Le Zola");
+            done();
+        },500);
+    });
+});
+
+
 test("query on server with filter 1", function (assert) {
     var done = assert.async();
 
@@ -91,7 +109,7 @@ test("query on server with filter 1", function (assert) {
     }, 'gps IS NULL');
 });
 
-test("query on server with filte 1r", function (assert) {
+test("query on server with filter 2", function (assert) {
     var done = assert.async();
 
     var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");

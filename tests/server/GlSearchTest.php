@@ -68,4 +68,18 @@ class GlSearchTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($fields, $obj->fields);
         $this->assertContains("Gym Suédoise Lyon", $obj->results[0]->value->title);
     }
+
+    public function testSearch4()
+    {
+        $fields = ['title', 'tags', 'description', 'address', 'city'];
+
+        $search = new GlServerSearch(__DIR__ . "/data/web.db", "web", $fields);
+
+        $json = $search->queryJson("tags:cinema");
+        $obj  = json_decode($json);
+
+        $this->assertEquals(2,count($obj->results));
+        $this->assertContains("Cinéma Comoedia", $obj->results[0]->value->title);
+        $this->assertContains("Le Zola", $obj->results[1]->value->title);
+    }
 } 
