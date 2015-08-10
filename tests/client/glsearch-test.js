@@ -52,7 +52,7 @@ test("query on server", function (assert) {
     }, function (values) {
     });
 });
-test("query on server with filter", function (assert) {
+test("query on server with filte 1r", function (assert) {
     var done = assert.async();
     var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
     search.query("lyon", function (value) {
@@ -62,5 +62,16 @@ test("query on server with filter", function (assert) {
         }, 500);
     }, function (values) {
     }, 'gps IS NULL');
+});
+test("query on server with filte 1r", function (assert) {
+    var done = assert.async();
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
+    search.query("lyon", function (value) {
+    }, function (values) {
+        setTimeout(function () {
+            assert.equal(values.length, 3);
+            done();
+        }, 500);
+    }, 'gps IS NOT NULL');
 });
 //# sourceMappingURL=glsearch-test.js.map
