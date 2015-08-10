@@ -5,8 +5,7 @@ cinema_comoedia:
     feedlink: "http://www.cinema-comoedia.com/rss/"
     feedlimit: 5
     tags: "cinéma"
-    lat: 45.7473766
-    lng: 4.8355764
+    gps: "45.7473766,4.8355764"
     description: |
                   Cinéma indépendant art et essai, lieu de rencontres dans lequel
                   projections de films, expositions, conférences et débats sont également possibles ...
@@ -35,8 +34,7 @@ gym_suedoise_lyon:
     sociallink: "https://www.facebook.com/Le126/photos_stream"
     rel: ""
     tags: "restaurant evenement gourmet français"
-    lat: 45.7689867
-    lng: 4.8566032
+    gps: "45.7689867,4.8566032"
     description: |
                    Solution de continuité
     address: "126 rue de Sèze"
@@ -53,8 +51,7 @@ akle:
     tags: "restaurant libanais monde"
     description: |
                    Pour ceux qui ont l'âme d'un pois chiche
-    lat: 45.7584076
-    lng: 4.8497723
+    gps: "45.7584076,4.8497723"
     address: "108 rue Chaponnay"
     city: "Lyon 3"
     phone: "06 58 30 52 54"

@@ -61,7 +61,7 @@ class GlSearchTest extends \PHPUnit_Framework_TestCase
 
         $search = new GlServerSearch(__DIR__ . "/data/web.db", "web", $fields);
 
-        $json = $search->queryJson("lyon", "(lat IS NULL) AND (lng IS NULL)");
+        $json = $search->queryJson("lyon", "(gps IS NULL)");
 
         $obj = json_decode($json);
 

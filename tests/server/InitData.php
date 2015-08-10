@@ -8,7 +8,7 @@ $yamlFiles      = [__DIR__ . "/data/web.yml", __DIR__ . "/data/web2.yml"];
 $dbname         = __DIR__ . "/data/web.db";
 $table          = "web";
 $fieldsFullText = ['title', 'tags', 'description', 'address', 'city'];
-$fieldsFilter   = ['lat', 'lng'];
+$fieldsFilter   = ['gps'];
 
 $engine = new GlServerEngine($dbname, $output, true);
 $engine->importYaml(
