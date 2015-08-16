@@ -1,9 +1,8 @@
-# js-php-search-as-you-type (in progress)
+# js-php-real-time-search (in progress)
 
-A small [Algolia](https://www.algolia.com/) and [Elasticsearch](https://www.elastic.co/products/elasticsearch) alternative.
+A real-time full text search solution in javascript (client side) and php (server side)
 
-Autocomplete
-Search and browsing as-you-type
+Autocomplete, search and browsing as-you-type in real-time
 
 ![Sample Search](https://raw.githubusercontent.com/emmanuelroecker/js-php-search-as-you-type/master/doc/search.gif)
 
