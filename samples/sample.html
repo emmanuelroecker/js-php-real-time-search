@@ -30,7 +30,7 @@
         return html;
     };
 
-    var client = new glSearch("http://lyon.glicer.com/search/search.php?q=");
+    var client = new glSearch("http://lyon.glicer.com/search/search.php?q={q}&f={f}");
     console.log('start');
     $("#target").keyup(function (event) {
         var val = $(this).val();
