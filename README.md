@@ -10,6 +10,10 @@ It's working with
 
 *   [SQLite FTS4](https://sqlite.org/fts3.html)
 
+## Check out the [demo](http://lyon.glicer.com/).
+
+Feedback appreciated
+
 ## Server Side
 
 ### Import Data
