@@ -19,6 +19,7 @@
 namespace GlEngine\Tests;
 
 use GlSearchEngine\GlServerSearch;
+use GlSearchEngine\GlServerIndex;
 
 /**
  * @covers        \GlSearchEngine\GlServerSearch
@@ -26,6 +27,33 @@ use GlSearchEngine\GlServerSearch;
  */
 class GlSearchTest extends \PHPUnit_Framework_TestCase
 {
+    protected static function getObjectAndMethod($classname, $name)
+    {
+        $class  = new \ReflectionClass($classname);
+        $obj    = $class->newInstanceWithoutConstructor();
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+
+        return ['object' => $obj, 'method' => $method];
+    }
+
+    protected static function callMethod($obj_method, $args)
+    {
+        return $obj_method['method']->invokeArgs($obj_method['object'], $args);
+    }
+
+
+    public function testNormalizeIndex()
+    {
+        $obj_method = self::getObjectAndMethod('GlSearchEngine\GlServerIndex', 'normalize');
+
+        $test1 = self::callMethod($obj_method, ["L’Âme Sœur"]);
+        $this->assertEquals("l'ame soeur", $test1);
+
+        $test2 = self::callMethod($obj_method, ["Le Comptoir d'Oz"]);
+        $this->assertEquals("le comptoir d'oz", $test2);
+    }
+
     public function testSearch1()
     {
         $fields = ['title', 'tags', 'description', 'address', 'city'];
@@ -78,8 +106,20 @@ class GlSearchTest extends \PHPUnit_Framework_TestCase
         $json = $search->queryJson("tags:cinema");
         $obj  = json_decode($json);
 
-        $this->assertEquals(2,count($obj->results));
+        $this->assertEquals(2, count($obj->results));
         $this->assertContains("Cinéma Comoedia", $obj->results[0]->value->title);
         $this->assertContains("Le Zola", $obj->results[1]->value->title);
+    }
+
+    public function testSearch5()
+    {
+        $fields = ['title', 'tags', 'description', 'address', 'city'];
+
+        $search = new GlServerSearch(__DIR__ . "/data/web.db", "web", $fields);
+
+        $json = $search->queryJson("l'ame soeur");
+        $obj  = json_decode($json);
+
+        $this->assertEquals(1, count($obj->results));
     }
 } 

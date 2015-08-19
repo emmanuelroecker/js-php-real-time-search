@@ -66,9 +66,11 @@ class GlServerSearch
      */
     public function queryJson($queryFullText, $queryFilters = null)
     {
-        $sql = "SELECT json,offsets FROM {$this->tableFilter} JOIN (SELECT docid, offsets({$this->tableFullText}) AS offsets
+        $queryFullText = \SQLite3::escapeString($queryFullText);
+        $sql           = "SELECT json,offsets FROM {$this->tableFilter} JOIN (SELECT docid, offsets({$this->tableFullText}) AS offsets
            FROM {$this->tableFullText} WHERE {$this->tableFullText} MATCH '$queryFullText') USING (docid)";
         if (($queryFilters && strlen($queryFilters) > 0)) {
+            $queryFilters = \SQLite3::escapeString($queryFilters);
             $sql .= " WHERE ($queryFilters)";
         }
 

@@ -41,3 +41,23 @@ lezola_cinema:
     address: "17 cours Emile Zola"
     city: "69100 Villeurbanne"
     phone: "04 78 93 42 65"
+comptoir_d_oz:
+    title: "Le Comptoir d'Oz"
+    sociallink: "https://www.facebook.com/pages/Le-Comptoir-dOz/286941331326621?sk=photos_stream"
+    tags: "petits déjeuner sandwich salades restauration express"
+    gps: "45.760085,4.8485742"
+    description: |
+                  Et le tour est joué
+    address: "92 rue Moncey"
+    city: "Lyon 3"
+    phone: "04 78 79 93 80"
+ame_soeur:
+    title: "L’Âme Sœur"
+    sociallink: "https://www.facebook.com/pages/LAme-Soeur/644231352281188?sk=photos_stream"
+    tags: "restaurant français gourmet"
+    gps: "45.7610052,4.8488842"
+    description: |
+                   Ici on prend pas du brocolis à la Vittel, on prend du plaisir. Vous connaissez ce mot ?
+    address: "209 rue Duguesclin"
+    city: "Lyon 3"
+    phone: "04 78 42 47 78"

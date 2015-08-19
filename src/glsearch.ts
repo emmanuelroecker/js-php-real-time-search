@@ -32,7 +32,8 @@ var defaultDiacritics:Diacritics[] = [
     {base: 'o', letters: 'öô'},
     {base: 'u', letters: 'ùüû'},
     {base: 'c', letters: 'ç'},
-    {base: 'oe', letters: 'œ'}
+    {base: 'oe', letters: 'œ'},
+    {base: "'", letters: '’'}
 ];
 
 class glSearch {
@@ -87,7 +88,7 @@ class glSearch {
         sentence = this.removeDiacritics(sentence);
         var query = sentence.split(/[^a-z0-9:]+/i);
 
-        query = query.filter(function(word) {
+        query = query.filter(function (word) {
             return word.length > 1;
         });
 

@@ -61,68 +61,23 @@ class GlServerIndex
     /**
      * @param string $s
      *
-     * @throws \Exception
      * @return string
      */
-    private function normalizeUtf8String($s)
+
+    private function removeDiacritics($s)
     {
-        if (!class_exists("Normalizer", $autoload = false)) {
-            throw new \Exception('Normalizer-class missing ! ');
-        }
+        $s = mb_strtolower($s, 'UTF-8');
 
-        $original_string = $s;
+        $s = str_replace(['ä', 'â', 'à'], "a", $s);
+        $s = str_replace(['é', 'è', 'ë', 'ê'], "e", $s);
+        $s = str_replace(['ï', 'î'], "i", $s);
+        $s = str_replace(['ö', 'ô'], "o", $s);
+        $s = str_replace(['ù', 'ü', 'û'], "u", $s);
+        $s = str_replace('ç', "c", $s);
+        $s = str_replace('œ', "oe", $s);
+        $s = str_replace("’", "'", $s);
 
-        $s = preg_replace('@\x{00c4}@u', "AE", $s);
-        $s = preg_replace('@\x{00d6}@u', "OE", $s);
-        $s = preg_replace('@\x{00dc}@u', "UE", $s);
-        $s = preg_replace('@\x{00e4}@u', "ae", $s);
-        $s = preg_replace('@\x{00f6}@u', "oe", $s);
-        $s = preg_replace('@\x{00fc}@u', "ue", $s);
-        $s = preg_replace('@\x{00f1}@u', "ny", $s);
-        $s = preg_replace('@\x{00ff}@u', "yu", $s);
-
-        $s = \Normalizer::normalize($s, \Normalizer::FORM_D);
-
-        $s = preg_replace('@\pM@u', "", $s);
-
-        $s = preg_replace('@\x{00df}@u', "ss", $s);
-        $s = preg_replace('@\x{00c6}@u', "AE", $s);
-        $s = preg_replace('@\x{00e6}@u', "ae", $s);
-        $s = preg_replace('@\x{0132}@u', "IJ", $s);
-        $s = preg_replace('@\x{0133}@u', "ij", $s);
-        $s = preg_replace('@\x{0152}@u', "OE", $s);
-        $s = preg_replace('@\x{0153}@u', "oe", $s);
-
-        $s = preg_replace('@\x{00d0}@u', "D", $s);
-        $s = preg_replace('@\x{0110}@u', "D", $s);
-        $s = preg_replace('@\x{00f0}@u', "d", $s);
-        $s = preg_replace('@\x{0111}@u', "d", $s);
-        $s = preg_replace('@\x{0126}@u', "H", $s);
-        $s = preg_replace('@\x{0127}@u', "h", $s);
-        $s = preg_replace('@\x{0131}@u', "i", $s);
-        $s = preg_replace('@\x{0138}@u', "k", $s);
-        $s = preg_replace('@\x{013f}@u', "L", $s);
-        $s = preg_replace('@\x{0141}@u', "L", $s);
-        $s = preg_replace('@\x{0140}@u', "l", $s);
-        $s = preg_replace('@\x{0142}@u', "l", $s);
-        $s = preg_replace('@\x{014a}@u', "N", $s);
-        $s = preg_replace('@\x{0149}@u', "n", $s);
-        $s = preg_replace('@\x{014b}@u', "n", $s);
-        $s = preg_replace('@\x{00d8}@u', "O", $s);
-        $s = preg_replace('@\x{00f8}@u', "o", $s);
-        $s = preg_replace('@\x{017f}@u', "s", $s);
-        $s = preg_replace('@\x{00de}@u', "T", $s);
-        $s = preg_replace('@\x{0166}@u', "T", $s);
-        $s = preg_replace('@\x{00fe}@u', "t", $s);
-        $s = preg_replace('@\x{0167}@u', "t", $s);
-
-        $s = preg_replace('@[^\0-\x80]@u', "", $s);
-
-        if (empty($s)) {
-            return $original_string;
-        } else {
-            return $s;
-        }
+        return $s;
     }
 
     /**
@@ -132,7 +87,7 @@ class GlServerIndex
      */
     private function normalize($s)
     {
-        return strtolower(preg_replace('/\r\n?/', "", \SQLite3::escapeString($this->normalizeUtf8String($s))));
+        return preg_replace('/\r\n?/', "", $this->removeDiacritics($s));
     }
 
     /**
@@ -219,13 +174,9 @@ class GlServerIndex
         $valuesFilter = [];
         foreach ($this->fieldsFilter as $fieldFilter) {
             if (isset($data[$fieldFilter])) {
-                if (is_string($data[$fieldFilter])) {
-                    $valuesFilter[$fieldFilter] = \SQLite3::escapeString($data[$fieldFilter]);
-                } else {
-                    $valuesFilter[$fieldFilter] = $data[$fieldFilter];
-                }
+                $valuesFilter[$fieldFilter] = $data[$fieldFilter];
             } else {
-               $valuesFilter[$fieldFilter] =  null;
+                $valuesFilter[$fieldFilter] = null;
             }
         }
 
@@ -249,7 +200,7 @@ class GlServerIndex
             $valuesFilter   = $this->valuesFilter($elem);
 
             if (sizeof($valuesFullText) > 0) {
-                $json = \SQLite3::escapeString(json_encode($elem));
+                $json = json_encode($elem);
 
                 $num = 1;
                 $this->stmtInsertFilter->bindValue($num++, $id, SQLITE3_INTEGER);

@@ -86,6 +86,42 @@ test("query on server 2", function (assert) {
         }, 500);
     });
 });
+test("query on server 3", function (assert) {
+    var done = assert.async();
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
+    search.query("l'ame soeur", function (value) {
+    }, function (values) {
+        setTimeout(function () {
+            assert.equal(values.length, 1);
+            assert.equal(values[0].value.title, "L’<b>Âme</b> <b>Sœur</b>");
+            done();
+        }, 500);
+    });
+});
+test("query on server 4", function (assert) {
+    var done = assert.async();
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
+    search.query("l’ame soeur", function (value) {
+    }, function (values) {
+        setTimeout(function () {
+            assert.equal(values.length, 1);
+            assert.equal(values[0].value.title, "L’<b>Âme</b> <b>Sœur</b>");
+            done();
+        }, 500);
+    });
+});
+test("query on server 5", function (assert) {
+    var done = assert.async();
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
+    search.query("le comptoir d oz", function (value) {
+    }, function (values) {
+        setTimeout(function () {
+            assert.equal(values.length, 1);
+            assert.equal(values[0].value.title, "<b>Le</b> <b>Comptoir</b> d'<b>Oz</b>");
+            done();
+        }, 500);
+    });
+});
 test("query on server with filter 1", function (assert) {
     var done = assert.async();
     var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
@@ -103,7 +139,7 @@ test("query on server with filter 2", function (assert) {
     search.query("lyon", function (value) {
     }, function (values) {
         setTimeout(function () {
-            assert.equal(values.length, 3);
+            assert.equal(values.length, 5);
             done();
         }, 500);
     }, 'gps IS NOT NULL');

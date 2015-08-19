@@ -21,7 +21,8 @@ var defaultDiacritics = [
     { base: 'o', letters: 'öô' },
     { base: 'u', letters: 'ùüû' },
     { base: 'c', letters: 'ç' },
-    { base: 'oe', letters: 'œ' }
+    { base: 'oe', letters: 'œ' },
+    { base: "'", letters: '’' }
 ];
 var glSearch = (function () {
     function glSearch(urlServer, minQueryLength) {
