@@ -110,7 +110,7 @@ class GlServerIndex
         $tableFullText        = "{$table}FT";
 
         if (sizeof($fieldsFilter) > 0) {
-            $sqlfieldsFilter = implode("','", $fieldsFilter);
+            $sqlfieldsFilter = implode("','", array_keys($fieldsFilter));
             $createSQLFilter = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json, '{$sqlfieldsFilter}')";
         } else {
             $createSQLFilter = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json)";
@@ -126,7 +126,7 @@ class GlServerIndex
             throw new \Exception("You must have at least one field full text");
         }
 
-        $sqlfieldsFullText = implode("','", $fieldsFullText);
+        $sqlfieldsFullText = implode("','", array_keys($fieldsFullText));
         $createSQLFullText = "CREATE VIRTUAL TABLE {$tableFullText} USING fts4('{$sqlfieldsFullText}');";
         if ($this->db->exec($createSQLFullText) === false) {
             $this->output->writeln($createSQLFullText);
@@ -144,17 +144,19 @@ class GlServerIndex
         $this->stmtInsertFullText = $this->db->prepare($prepareInsert);
     }
 
-
     /**
-     * @param $data
+     * @param &$data
      *
      * @return array
      */
-    private function valuesFullText($data)
+    private function valuesFullText(&$data)
     {
         $valuesFullText = [];
-        foreach ($this->fieldsFullText as $fieldFullText) {
+        foreach ($this->fieldsFullText as $fieldFullText => $fctfieldFullText) {
             if (isset($data[$fieldFullText])) {
+                if ($fctfieldFullText) {
+                    $data[$fieldFullText] = $fctfieldFullText($data[$fieldFullText]);
+                }
                 $valuesFullText[$fieldFullText] = $this->normalize($data[$fieldFullText]);
             } else {
                 $valuesFullText[$fieldFullText] = '';
@@ -165,15 +167,18 @@ class GlServerIndex
     }
 
     /**
-     * @param $data
+     * @param &$data
      *
      * @return array
      */
-    private function valuesFilter($data)
+    private function valuesFilter(&$data)
     {
         $valuesFilter = [];
-        foreach ($this->fieldsFilter as $fieldFilter) {
+        foreach ($this->fieldsFilter as $fieldFilter => $fctfieldFilter) {
             if (isset($data[$fieldFilter])) {
+                if ($fctfieldFilter) {
+                    $data[$fieldFilter] = $fctfieldFilter($data[$fieldFilter]);
+                }
                 $valuesFilter[$fieldFilter] = $data[$fieldFilter];
             } else {
                 $valuesFilter[$fieldFilter] = null;

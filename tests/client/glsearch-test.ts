@@ -69,7 +69,7 @@ test("query on server", function (assert) {
 
     search.query("rest chaponnay", function (value) {
         setTimeout(function () {
-            assert.equal(value.title, "Aklé - Le Comptoir à Mezzés");
+            assert.equal(value.title, "Aklé - Le Comptoir à Mezzés - test");
             assert.equal(value.tags, "<b>rest</b>aurant libanais monde");
             assert.equal(value.address, "108 rue <b>Chaponnay</b>");
             done();
@@ -86,8 +86,8 @@ test("query on server 1", function (assert) {
     search.query("cine z", function (value) {
     }, function (values) {
         assert.equal(values.length, 2);
-        assert.equal(values[0].value.title,"<b>Ciné</b>ma Comoedia");
-        assert.equal(values[1].value.title,"Le Zola");
+        assert.equal(values[0].value.title,"<b>Ciné</b>ma Comoedia - test");
+        assert.equal(values[1].value.title,"Le Zola - test");
         done();
     });
 });
@@ -101,8 +101,8 @@ test("query on server 2", function (assert) {
     }, function (values) {
         setTimeout(function () {
             assert.equal(values.length, 2);
-            assert.equal(values[0].value.title,"Cinéma Comoedia");
-            assert.equal(values[1].value.title,"Le Zola");
+            assert.equal(values[0].value.title,"Cinéma Comoedia - test");
+            assert.equal(values[1].value.title,"Le Zola - test");
             done();
         },500);
     });
@@ -117,7 +117,7 @@ test("query on server 3", function (assert) {
     }, function (values) {
         setTimeout(function () {
             assert.equal(values.length, 1);
-            assert.equal(values[0].value.title,"L’<b>Âme</b> <b>Sœur</b>");
+            assert.equal(values[0].value.title,"L’<b>Âme</b> <b>Sœur </b>- test");
             done();
         },500);
     });
@@ -132,7 +132,7 @@ test("query on server 4", function (assert) {
     }, function (values) {
         setTimeout(function () {
             assert.equal(values.length, 1);
-            assert.equal(values[0].value.title,"L’<b>Âme</b> <b>Sœur</b>");
+            assert.equal(values[0].value.title,"L’<b>Âme</b> <b>Sœur </b>- test");
             done();
         },500);
     });
@@ -147,7 +147,7 @@ test("query on server 5", function (assert) {
     }, function (values) {
         setTimeout(function () {
             assert.equal(values.length, 1);
-            assert.equal(values[0].value.title,"<b>Le</b> <b>Comptoir</b> d'<b>Oz</b>");
+            assert.equal(values[0].value.title,"<b>Le</b> <b>Comptoir</b> d'<b>Oz</b> - test");
             done();
         },500);
     });
@@ -161,7 +161,7 @@ test("query on server with filter 1", function (assert) {
 
     search.query("lyon", function (value) {
         setTimeout(function () {
-            assert.equal(value.title, "Gym Suédoise <b>Lyon</b>");
+            assert.equal(value.title, "Gym Suédoise <b>Lyon</b> - test");
             done();
         },500);
     }, function (values) {

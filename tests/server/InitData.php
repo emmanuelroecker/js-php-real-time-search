@@ -7,8 +7,14 @@ $output->writeln("Init Database");
 $yamlFiles      = [__DIR__ . "/data/web.yml", __DIR__ . "/data/web2.yml"];
 $dbname         = __DIR__ . "/data/web.db";
 $table          = "web";
-$fieldsFullText = ['title', 'tags', 'description', 'address', 'city'];
-$fieldsFilter   = ['gps'];
+$fieldsFullText = [
+    'title'       => function($title) { return $title . " - test"; },
+    'tags'        => null,
+    'description' => null,
+    'address'     => null,
+    'city'        => null
+];
+$fieldsFilter   = ['gps' => null];
 
 $engine = new GlServerEngine($dbname, $output, true);
 $engine->importYaml(
