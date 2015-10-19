@@ -98,7 +98,11 @@ class GlServerEngine
                         )
             );
         } catch (ParseException $e) {
-            $this->output->writeln('Unable to parse YAML string: %s', $e->getMessage());
+            $this->output->writeln('Unable to parse YAML string: %s in file %s', $e->getMessage(), $yaml);
+            return;
+        }
+        if ($data == null) {
+            $this->output->writeln('Unable to parse YAML file : %s', $yaml);
             return;
         }
         $index->import($startid, $data, $callback);
@@ -106,8 +110,8 @@ class GlServerEngine
 
     /**
      * @param string       $table
-     * @param array        $fieldsFilter    ,
-     * @param array        $fieldsFullText  ,
+     * @param array        $fieldsFilter   ,
+     * @param array        $fieldsFullText ,
      * @param array|string $yamls
      * @param callable     $callback
      */
