@@ -95,25 +95,37 @@ class GlServerIndex
      * @param string          $table
      * @param array           $fieldsFilter
      * @param array           $fieldsFullText
+     * @param boolean         $useuid
      * @param OutputInterface $output
      *
      * @throws \Exception
      */
-    public function __construct($db, $table, array $fieldsFilter, array $fieldsFullText, OutputInterface $output)
-    {
+    public function __construct(
+        $db,
+        $table,
+        array $fieldsFilter,
+        array $fieldsFullText,
+        $useuid,
+        OutputInterface $output
+    ) {
         $this->output = $output;
         $this->db     = $db;
 
         $this->fieldsFilter   = $fieldsFilter;
         $this->fieldsFullText = $fieldsFullText;
+        $this->useuid         = $useuid;
         $tableFilter          = "{$table}F";
         $tableFullText        = "{$table}FT";
 
+        if ($useuid) {
+            $useuid = 'uid UNIQUE,';
+        }
+
         if (sizeof($fieldsFilter) > 0) {
             $sqlfieldsFilter = implode("','", array_keys($fieldsFilter));
-            $createSQLFilter = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json, '{$sqlfieldsFilter}')";
+            $createSQLFilter = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, {$useuid} json, '{$sqlfieldsFilter}')";
         } else {
-            $createSQLFilter = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, uid UNIQUE, json)";
+            $createSQLFilter = "CREATE TABLE {$tableFilter}(docid INTEGER PRIMARY KEY, {$useuid} json)";
         }
 
         if ($this->db->exec($createSQLFilter) === false) {
@@ -209,7 +221,9 @@ class GlServerIndex
 
                 $num = 1;
                 $this->stmtInsertFilter->bindValue($num++, $id, SQLITE3_INTEGER);
-                $this->stmtInsertFilter->bindValue($num++, $uid, SQLITE3_TEXT);
+                if ($this->useuid) {
+                    $this->stmtInsertFilter->bindValue($num++, $uid, SQLITE3_TEXT);
+                }
                 $this->stmtInsertFilter->bindValue($num++, $json, SQLITE3_TEXT);
                 foreach ($valuesFilter as $valueFilter) {
                     $this->stmtInsertFilter->bindValue($num++, $valueFilter);

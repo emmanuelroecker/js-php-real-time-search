@@ -99,10 +99,12 @@ class GlServerEngine
             );
         } catch (ParseException $e) {
             $this->output->writeln('Unable to parse YAML string: %s in file %s', $e->getMessage(), $yaml);
+
             return;
         }
         if ($data == null) {
             $this->output->writeln('Unable to parse YAML file : %s', $yaml);
+
             return;
         }
         $index->import($startid, $data, $callback);
@@ -114,16 +116,18 @@ class GlServerEngine
      * @param array        $fieldsFullText ,
      * @param array|string $yamls
      * @param callable     $callback
+     * @param bool         $useuid
      */
     public function importYaml(
         $table,
         array $fieldsFilter,
         array $fieldsFullText,
         $yamls,
-        callable $callback
+        callable $callback,
+        $useuid = true
     ) {
         $id    = 0;
-        $index = new GlServerIndex($this->db, $table, $fieldsFilter, $fieldsFullText, $this->output);
+        $index = new GlServerIndex($this->db, $table, $fieldsFilter, $fieldsFullText, $useuid, $this->output);
         if (is_array($yamls)) {
             foreach ($yamls as $yaml) {
                 $this->importOneYaml($id, $index, $yaml, $callback);
