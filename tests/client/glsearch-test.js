@@ -122,6 +122,18 @@ test("query on server 5", function (assert) {
         }, 500);
     });
 });
+test("query on server 6", function (assert) {
+    var done = assert.async();
+    var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");
+    search.query("le comptoir d oz", function (value) {
+    }, function (values) {
+        setTimeout(function () {
+            assert.equal(values.length, 1);
+            assert.equal(values[0].value.title, "Le Comptoir d'Oz - test");
+            done();
+        }, 500);
+    }, null, false);
+});
 test("query on server with filter 1", function (assert) {
     var done = assert.async();
     var search = new glSearch("http://localhost:1349/search.php?q={q}&f={f}");

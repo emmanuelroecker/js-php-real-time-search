@@ -153,7 +153,7 @@ class glSearch {
         anHttpRequest.send(null);
     }
 
-    public query(words:string, callbackEach:(value:any) => void, callbackEnd:(values:any[]) => void, filter:string = null) {
+    public query(words:string, callbackEach:(value:any) => void, callbackEnd:(values:any[]) => void, filter:string = null, hightlights:boolean = true) {
         if (words.length < this.minQueryLength) {
             callbackEnd(null);
             return;
@@ -172,7 +172,9 @@ class glSearch {
             var fields:string[] = data.fields;
             var results = data.results;
             results.forEach(function (result) {
-                highlights(query, fields, result);
+                if (hightlights) {
+                    highlights(query, fields, result);
+                }
                 callbackEach(result.value);
             });
             callbackEnd(results);

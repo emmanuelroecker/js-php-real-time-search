@@ -124,8 +124,9 @@ var glSearch = (function () {
         anHttpRequest.open("GET", url, true);
         anHttpRequest.send(null);
     };
-    glSearch.prototype.query = function (words, callbackEach, callbackEnd, filter) {
+    glSearch.prototype.query = function (words, callbackEach, callbackEnd, filter, hightlights) {
         if (filter === void 0) { filter = null; }
+        if (hightlights === void 0) { hightlights = true; }
         if (words.length < this.minQueryLength) {
             callbackEnd(null);
             return;
@@ -141,7 +142,9 @@ var glSearch = (function () {
             var fields = data.fields;
             var results = data.results;
             results.forEach(function (result) {
-                highlights(query, fields, result);
+                if (hightlights) {
+                    highlights(query, fields, result);
+                }
                 callbackEach(result.value);
             });
             callbackEnd(results);
