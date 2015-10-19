@@ -10,5 +10,5 @@ if (!$process->isSuccessful()) {
     throw new \RuntimeException($process->getErrorOutput());
 }
 
-sleep(5);
+sleep(10);
 

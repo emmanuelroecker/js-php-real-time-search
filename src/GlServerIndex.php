@@ -147,7 +147,11 @@ class GlServerIndex
         }
 
         $values                 = implode(",", array_fill(0, sizeof($this->fieldsFilter), '?'));
-        $prepareInsert          = "INSERT INTO {$tableFilter} VALUES (?, ?, ?, $values)";
+        if ($this->useuid) {
+            $prepareInsert          = "INSERT INTO {$tableFilter} VALUES (?, ?, ?, $values)";
+        } else {
+            $prepareInsert          = "INSERT INTO {$tableFilter} VALUES (?, ?, $values)";
+        }
         $this->stmtInsertFilter = $this->db->prepare($prepareInsert);
 
 
