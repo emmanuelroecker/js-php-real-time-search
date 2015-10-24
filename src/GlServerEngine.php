@@ -98,12 +98,12 @@ class GlServerEngine
                         )
             );
         } catch (ParseException $e) {
-            $this->output->writeln('Unable to parse YAML string: %s in file %s', $e->getMessage(), $yaml);
+            $this->output->writeln("Unable to parse YAML string: {$e->getMessage()} in file {$yaml}");
 
             return;
         }
         if ($data == null) {
-            $this->output->writeln('Unable to parse YAML file : %s', $yaml);
+            $this->output->writeln("Unable to parse YAML file : {$yaml}");
 
             return;
         }
